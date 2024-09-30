@@ -1,43 +1,4 @@
-import sqlite3
-
-def create_connection():
-    conn = sqlite3.connect("data.db")
-    return conn
-
-def create_tables():
-    conn = create_connection()
-    cursor = conn.cursor()
-
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS students (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        group_id INTEGER,
-        FOREIGN KEY (group_id) REFERENCES groups(id)
-    );
-    ''')
-
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS groups (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL
-    );
-    ''')
-    
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS attendance (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        student_id INTEGER,
-        date DATE NOT NULL,
-        status TEXT NOT NULL,
-        FOREIGN KEY (student_id) REFERENCES students(id)
-    );
-    ''')
-
-    conn.commit()
-    conn.close()
-    print("Таблицы успешно созданы")
-
+from db_init import create_connection
 
 def add_group(name):
     conn = create_connection()
@@ -96,6 +57,3 @@ def get_all_groups():
     groups = cursor.fetchall()  # Fetch all group names
     conn.close()
     return [group[0] for group in groups]  # Return only the names
-
-if __name__ == '__main__':
-    create_tables()
