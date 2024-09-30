@@ -52,3 +52,12 @@ def get_students_by_group_id(group_id):
     students = cursor.fetchall()
     conn.close()
     return students
+
+# Получение ID последней добавленной группы
+def get_last_group_id():
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute('SELECT id FROM groups ORDER BY id DESC LIMIT 1')
+    result = cursor.fetchone()
+    conn.close()
+    return result[0] if result else None

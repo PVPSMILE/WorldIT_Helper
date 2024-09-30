@@ -2,21 +2,18 @@ import os
 from dotenv import load_dotenv
 import telebot
 from telebot import types
-from db_controller import create_connection, add_group, add_student, get_students_by_group_id, create_tables
+from db_controller import create_connection, add_group, add_student, get_students_by_group_id, get_last_group_id
 
-# Загрузка переменных окружения
 load_dotenv()
 bot_token = os.getenv("TOKEN")
 bot = telebot.TeleBot(bot_token)
 
-# Создаем таблицы при запуске бота
-create_tables()
 
 # Переменная для хранения текущего ID группы
 current_group_id = None
 
 # Обработчик команды /button для показа клавиатуры
-@bot.message_handler(commands=['button'])
+@bot.message_handler(commands=['start'])
 def button(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     item1 = types.KeyboardButton('New group')
@@ -42,8 +39,8 @@ def process_group_name(message):
         add_group(group_name)
         
         # Получаем ID последней добавленной группы
-        global current_group_id
-        current_group_id = get_last_group_id()  # Функция, которую нужно добавить в db_controller
+
+          # Функция, которую нужно добавить в db_controller
 
         bot.send_message(message.chat.id, f"Group '{group_name}' has been successfully created!")
 
@@ -60,14 +57,7 @@ def process_group_name(message):
         bot.send_message(message.chat.id, "An error occurred while creating the group.")
         print(f"Error: {e}")  # Выводим ошибку в консоль для отладки
 
-# Получение ID последней добавленной группы
-def get_last_group_id():
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute('SELECT id FROM groups ORDER BY id DESC LIMIT 1')
-    result = cursor.fetchone()
-    conn.close()
-    return result[0] if result else None
+
 
 # Обработчик ввода студентов
 @bot.message_handler(func=lambda message: message.text == "Enter students manually")
@@ -79,6 +69,7 @@ def input_students(message):
 def process_students_input(message):
     student_full_name = message.text.strip()
 
+    current_group_id = get_last_group_id()
     if student_full_name.lower() == 'stop':
         # Когда введено "stop", выводим всех студентов в группе
         students = get_students_by_group_id(current_group_id)
