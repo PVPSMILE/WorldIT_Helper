@@ -1,4 +1,4 @@
-from db_init import create_connection
+from .db_init import create_connection
 
 def add_group(name):
     conn = create_connection()
