@@ -29,11 +29,12 @@ def create_tables():
 
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS attendance (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        student_id INTEGER,
-        date DATE NOT NULL,
-        status TEXT NOT NULL,
-        FOREIGN KEY (student_id) REFERENCES students(id)
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    student_id INTEGER,
+    date DATE NOT NULL,
+    status TEXT NOT NULL,
+    FOREIGN KEY (student_id) REFERENCES students(id),
+    UNIQUE(student_id, date)  -- Уникальное ограничение на комбинацию student_id и date
     );
     ''')
 

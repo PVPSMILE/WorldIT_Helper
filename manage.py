@@ -15,6 +15,7 @@ def buttons(message):
     item2 = telebot.types.KeyboardButton('Attendance log')
     item3 = telebot.types.KeyboardButton('Find student')
 
+
     markup.add(item1, item2, item3)
     bot.send_message(message.chat.id, "Choose an action:", reply_markup=markup)
 
