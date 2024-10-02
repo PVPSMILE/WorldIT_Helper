@@ -3,7 +3,6 @@ from db_controller.db_operators import get_all_groups, get_students_by_group_nam
 
 unknown_students = []
 def register_handlers(bot):
-    #clear_attendance(group_id=1)
     @bot.message_handler(func=lambda message: message.text == "Attendance log")
     def show_groups_for_attendance(message):
         groups = get_all_groups()  # Получаем все названия групп
