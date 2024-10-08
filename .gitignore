@@ -3,4 +3,6 @@ data.db
 venv/
 .env
 creds.json
+.DS_Store
 __pycache__/
+*.xlsx

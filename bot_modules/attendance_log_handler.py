@@ -1,9 +1,9 @@
 from telebot import types
-from db_controller.db_operators import get_all_groups, get_students_by_group_name, record_attendance, clear_attendance
+from db_controller.db_operators import get_all_groups, get_students_by_group_name, record_attendance, clear_attendance, get_students_with_no_attendance
 
 unknown_students = []
 def register_handlers(bot):
-    @bot.message_handler(func=lambda message: message.text == "Attendance log")
+    @bot.message_handler(func=lambda message: message.text == "📖 Attendance log")
     def show_groups_for_attendance(message):
         groups = get_all_groups()  # Получаем все названия групп
         if not groups:
@@ -22,22 +22,31 @@ def register_handlers(bot):
         group_name = call.data.split("show_group_")[1]  # Извлекаем название группы
         bot.send_message(call.message.chat.id, f"You selected group: {group_name}")
 
-        students = get_students_by_group_name(group_name)  # Получаем студентов по названию группы
-
-        if not students:
+        students = get_students_with_no_attendance(group_name)  # Получаем студентов по названию группы
+        print(students)
+        all_students_in_group = get_students_by_group_name(group_name)
+        # print(attebdence)
+        if not students and not all_students_in_group:
             bot.send_message(call.message.chat.id, "No students found in this group.")
             return
+        elif not students and all_students_in_group:
+            
+            bot.send_message(call.message.chat.id, "You marked all students in this group")
+            return
+
 
     # Начинаем обработку каждого студента
         process_next_student(call.message, students, 0, group_name, unknown_students)
 
     def process_next_student(message, students, index, group_name, unknown_students):
+        print(students)
+        print(len(students))
         if index >= len(students):
             # Когда все студенты обработаны, выводим результат
             bot.send_message(message.chat.id, "Attendance log completed for this group.")
             if unknown_students:
                 bot.send_message(message.chat.id, '\n'.join([f"{s[1]} {s[2]}" for s in unknown_students]))
-                
+                unknown_students.clear()
             else:
                 bot.send_message(message.chat.id, f"All students on a lesson")
             return
@@ -64,7 +73,7 @@ def register_handlers(bot):
         group_name = action_data[4]  # Получаем название группы из callback_data
 
         # Получаем текущего студента по его индексу (id, surname, name)
-        students = get_students_by_group_name(group_name)  # Используем сохраненное название группы
+        students = get_students_with_no_attendance(group_name)  # Используем сохраненное название группы
         student = students[index]
 
         # Обрабатываем действие и обновляем списки в зависимости от выбора

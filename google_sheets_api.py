@@ -1,13 +1,13 @@
 
 from pprint import pprint
-import httplib2
+from dotenv import load_dotenv
+import httplib2, os
 from googleapiclient.discovery import build
 from oauth2client.service_account import ServiceAccountCredentials
 
-
-# Load credentials and bot token
-CREDENTIAL_FILE = "creds.json"
-spreadsheet_id = "1-f7uFu0T3Sqn8OxAEYkJpZX6oCuTjSaM2Rqhexpyoqg"  # Your Google Sheet ID
+load_dotenv()
+CREDENTIAL_FILE = os.getenv("CREDENTIAL_FILE")
+spreadsheet_id = os.getenv("SPREADSHEET_ID")
 
 # Create service account credentials
 credentials = ServiceAccountCredentials.from_json_keyfile_name(
